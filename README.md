@@ -8,7 +8,7 @@ This project shows how to use [mbed-client-cli](https://github.com/PelionIoT/mbe
     $ git clone https://github.com/mbed-ce-libraries-examples/mbed-ntp-cli-example.git
     $ git submodule update --init mbed-os
     ```
-2. You may want to update the mbed-os submodule to the latest version, with `cd mbed-ntp-cli-example/mbed-os && git fetch origin && git reset --hard origin/master`
+2. You may want to update the mbed-os submodule to the latest version, with `cd mbed-ntp-cli-example/mbed-os && git fetch origin && git reset --hard origin/main`
 3. Set up the GNU ARM toolchain (and other programs) on your machine using [the toolchain setup guide](https://github.com/mbed-ce/mbed-os/wiki/Toolchain-Setup-Guide).
 4. Set up the CMake project for editing.  We have three ways to do this:
     - On the [command line](https://github.com/mbed-ce/mbed-os/wiki/Project-Setup:-Command-Line)
