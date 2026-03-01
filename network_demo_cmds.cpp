@@ -1,0 +1,110 @@
+#include "network_demo_cmds.h"
+
+#include <ns_cmdline.h>
+#include <OnboardNetworkStack.h>
+
+#include "mbed.h"
+
+/*
+ * Command to send a packet over UDP with the specified contents.
+ *
+ * This is designed to work with a command like the following on the host PC:
+ * $ netcat -ul <listen port>
+ */
+int udp_send(int argc, char *argv[]) {
+    if (argc != 4) {
+        return CMDLINE_RETCODE_INVALID_PARAMETERS;
+    }
+
+    // Append a newline to the payload so it will show up more cleanly in netcat at the other end
+    std::string payload(argv[3]);
+    payload += "\n";
+
+    // Open UDP socket
+    UDPSocket udpSocket;
+    auto err = udpSocket.open(&OnboardNetworkStack::get_default_instance());
+    if(err != NSAPI_ERROR_OK) {
+        printf("Failed to open UDP socket: %s\n", nsapi_strerror(err));
+        return CMDLINE_RETCODE_FAIL;
+    }
+
+    // Bind to an ephemeral port (i.e. a randomly chosen port number)
+    err = udpSocket.bind(0);
+    if(err != NSAPI_ERROR_OK) {
+        printf("Failed to bind UDP socket: %s\n", nsapi_strerror(err));
+        return CMDLINE_RETCODE_FAIL;
+    }
+
+    // Determine dest IP and port
+    uint16_t destPort = std::stoi(std::string(argv[2]));
+    SocketAddress dest(argv[1], destPort);
+    printf("Sending %zu bytes to %s:%" PRIu16 "\n", payload.size(), dest.get_ip_address(), dest.get_port());
+
+    err = udpSocket.sendto(dest, payload.data(), payload.size());
+    if(err < 0) {
+        printf("Failed to send: %s\n", nsapi_strerror(err));
+        return CMDLINE_RETCODE_FAIL;
+    }
+
+    return CMDLINE_RETCODE_SUCCESS;
+}
+
+char rxPacketBuffer[1472 + 1]; // + 1 for null terminator
+
+/*
+ * Command to begin listening for UDP data over the network.
+ *
+ * This is designed to be used with a netcat command like:
+ * $ netcat -u -p <Tx port> <Mbed device IP> <Rx port>
+ */
+int udp_listen(int argc, char *argv[]) {
+    if ((argc != 2) && (argc != 4)) {
+        return CMDLINE_RETCODE_INVALID_PARAMETERS;
+    }
+
+    // Local port must always be specified, since if we use an ephemeral port we have no way
+    // to determine what that port is.
+    const uint16_t localPort = std::stoi(std::string(argv[1]));
+
+    // Open UDP socket
+    UDPSocket udpSocket;
+    auto err = udpSocket.open(&OnboardNetworkStack::get_default_instance());
+    if(err != NSAPI_ERROR_OK) {
+        printf("Failed to open UDP socket: %s\n", nsapi_strerror(err));
+        return CMDLINE_RETCODE_FAIL;
+    }
+
+    err = udpSocket.bind(localPort);
+    if(err != NSAPI_ERROR_OK) {
+        printf("Failed to bind UDP socket: %s\n", nsapi_strerror(err));
+        return CMDLINE_RETCODE_FAIL;
+    }
+
+    printf(">> Now listening for UDP data on port %" PRIu16 "\n", localPort);
+
+    // Filter by remote address if specified
+    if(argc == 4) {
+        const uint16_t remotePort = std::stoi(std::string(argv[3]));
+        const SocketAddress remoteAddr(argv[2], remotePort);
+        err = udpSocket.connect(remoteAddr);
+        if(err != NSAPI_ERROR_OK) {
+            printf("Failed to connect UDP socket: %s\n", nsapi_strerror(err));
+            return CMDLINE_RETCODE_FAIL;
+        }
+
+        printf(">> Only accepting packets from remote address %s:%" PRIu16 "\n", remoteAddr.get_ip_address(), remotePort);
+    }
+
+    while(true) {
+        SocketAddress sourceAddress;
+        auto recvResult = udpSocket.recvfrom(&sourceAddress, rxPacketBuffer, sizeof(rxPacketBuffer) - 1);
+        if(recvResult < 0) {
+            printf("Failed to receive UDP packet: %s\n", nsapi_strerror(recvResult));
+        }
+        else {
+            // Ensure data is null terminated
+            rxPacketBuffer[recvResult] = '\0';
+            printf("Rx from %s: %s", sourceAddress.get_ip_address(), rxPacketBuffer);
+        }
+    }
+}

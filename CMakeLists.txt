@@ -22,6 +22,7 @@ add_executable(${PROJECT_NAME}
         main.cpp
         network_connection_cmds.cpp
         ntp_cmds.cpp
+        network_demo_cmds.cpp
 )
 target_link_libraries(${PROJECT_NAME}
         mbed-os

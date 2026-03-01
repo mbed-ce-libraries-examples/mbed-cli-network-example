@@ -23,6 +23,7 @@
 
 #include "network_connection_cmds.h"
 #include "ntp_cmds.h"
+#include "network_demo_cmds.h"
 
 #define TRACE_GROUP   "main"
 
@@ -75,6 +76,13 @@ int main(void)
         "If you run the command with no arguments, DHCP is used to obtain an IP address.\n"
         "Or, you may manually pass an IP, netmask, and gateway.");
 #endif
+    cmd_add("udp-send", udp_send, "Send a string via UDP packet",
+        "Usage: udp-send <dest IP> <dest port> \"<payload to send>\"\n"
+        "Sends the given payload string (plus a newline) to a remote host via UDP packet.");
+    cmd_add("udp-listen", udp_listen, "Listen forever for UDP packets",
+        "Usage: udp-listen <local port> [<remote IP> <remote port>]\n"
+        "Enters a loop listening forever for UDP packets on the given port. Optionally, you can pass a specific\n"
+        "remote IP and port to only accept packets from this address.");
 
     // Run the CLI
 

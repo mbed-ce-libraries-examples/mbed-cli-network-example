@@ -8,14 +8,11 @@
 
         // Note: 4 backslashes here turn into one actual backslash in the macro value.
         // This is clearly an "elder backslash" https://xkcd.com/1638/
-        "cmdline.boot_message": "\"Mbed CE NTP Command Line\\\\n\"",
+        "cmdline.boot_message": "\"Mbed CE Command Line Network Demo\\\\n\"",
 
         // Correct formatting of the help message from the CLI library needs C99 compliant
         // printf
         "target.printf_lib": "std",
-
-        // Uncomment to use mbed-baremetal instead of mbed-os
-        // "target.application-profile": "bare-metal"
       }
    }
 }
