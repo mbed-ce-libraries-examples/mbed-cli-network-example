@@ -1,27 +1,27 @@
-# Mbed NTP CLI Example
+# Mbed CE Command Line Network Example
 This project shows how to use [mbed-client-cli](https://github.com/PelionIoT/mbed-client-cli) to implement a command-line interface, and how to use [mbed-ntp-client](https://github.com/mbed-ce-libraries-examples/mbed-ntp-client) to synchronize the time on your local device with the network.
 
 ## How to set up this project:
 
 1. Clone it to your machine:
     ```
-    $ git clone https://github.com/mbed-ce-libraries-examples/mbed-ntp-cli-example.git
+    $ git clone https://github.com/mbed-ce-libraries-examples/mbed-cli-network-example.git
     $ git submodule update --init mbed-os
     ```
-2. You may want to update the mbed-os submodule to the latest version, with `cd mbed-ntp-cli-example/mbed-os && git fetch origin && git reset --hard origin/release`
+2. You may want to update the mbed-os submodule to the latest version, with `cd mbed-cli-network-example/mbed-os && git fetch origin && git reset --hard origin/release`
 3. Set up the GNU ARM toolchain (and other programs) on your machine using [the toolchain setup guide](https://github.com/mbed-ce/mbed-os/wiki/Toolchain-Setup-Guide).
 4. Set up the CMake project for editing.  We have three ways to do this:
     - On the [command line](https://github.com/mbed-ce/mbed-os/wiki/Project-Setup:-Command-Line)
     - Using the [CLion IDE](https://github.com/mbed-ce/mbed-os/wiki/Project-Setup:-CLion)
     - Using the [VS Code IDE](https://github.com/mbed-ce/mbed-os/wiki/Project-Setup:-VS-Code)
-5. Build the `flash-mbed-ntp-cli-example` target to upload the code to a connected device.
+5. Build the `flash-mbed-cli-network-example` target to upload the code to a connected device.
 
 ## Documentation:
 
 Documentation for the NTP client can be found in [its header file](https://github.com/mbed-ce-libraries-examples/mbed-ntp-client/blob/main/NTPClient.h). Documentation for Mbed CLI can be found in its [README](https://github.com/PelionIoT/mbed-client-cli) and its [header file](https://github.com/PelionIoT/mbed-client-cli/blob/master/mbed-client-cli/ns_cmdline.h).
 
 ## How to use the example:
-
+### Basics and Connecting to the Network
 This example can be run on any board that has a built-in Ethernet port or Wi-Fi module. It currently does not support cellular modules or external Ethernet/Wi-Fi modules, though this could be added at some point.'
 
 First, open a serial terminal to your board. Note that to use all the features of Mbed CLI, you will need to use a terminal program that supports VT100 escape sequences, such as TeraTerm on Windows and Minicom on Mac/Linux. Ensure that the program is configured for 115200 baud and LF line endings.
@@ -75,7 +75,8 @@ Network connection en0:
     DNS Server(s) . . . . . : 192.168.0.1, 192.168.0.1
 ```
 
-Now, you can use `ntp-update` to perform a time update via NTP. The first time you run it, you can expect a large time offset:
+## Syncing the Time with NTP
+Once connected to the network, you can use `ntp-update` to perform a time update via NTP. The first time you run it, you can expect a large time offset:
 
 ```
 />ntp-update 
@@ -94,7 +95,7 @@ NTP update successful.
 Compensated offset of 0.00e+00 seconds. The time is now 2026-01-04 20:28:23:403
 ```
 
-Note that `coreSNTP` only has a resolution of 1ms when computing the offset, so if we were already within 0.5ms of the NTP server, it will show zero offset.
+Note that `coreSNTP` only has a resolution of 1ms when computing the offset, so if we were already within +-0.5ms of the NTP server, it will show zero offset.
 
 If you would like to check the RTC functionality of your board, you can use `reboot` followed by `get-time` to see what time the NTP client loads out of the RTC.
 

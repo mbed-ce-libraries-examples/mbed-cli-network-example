@@ -10,8 +10,7 @@
 
 // Specific network interface
 #if MBED_CONF_TARGET_NETWORK_DEFAULT_INTERFACE_TYPE == ETHERNET
-EthernetInterface ethInterface;
-NetworkInterface & netInterface = ethInterface;
+NetworkInterface & netInterface = *EthernetInterface::get_default_instance();
 #elif MBED_CONF_TARGET_NETWORK_DEFAULT_INTERFACE_TYPE == WIFI
 WiFiInterface & wifiInterface = *WiFiInterface::get_default_instance();
 NetworkInterface & netInterface = wifiInterface;
@@ -56,7 +55,7 @@ int wifi_scan(int argc, char *argv[])
     printf("Scanning for Wi-Fi networks...\n");
     auto ret = wifiInterface.scan(scannedAPs.data(), maxNetworks);
     if(ret < 0) {
-        tr_error("Error performing wifi scan: %d", ret);
+        tr_error("Error performing wifi scan: %s", nsapi_strerror(ret));
         return CMDLINE_RETCODE_FAIL;
     }
 

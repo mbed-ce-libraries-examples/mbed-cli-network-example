@@ -7,6 +7,7 @@
 #include "NTPClient.h"
 
 #include <cinttypes>
+#include <OnboardNetworkStack.h>
 
 static bool ntp_initialized = false;
 
@@ -30,7 +31,7 @@ static void print_time() {
 
 static void init_ntp_if_needed() {
     if (!ntp_initialized) {
-        NTPClient::instance().init(&netInterface);
+        NTPClient::instance().init(&OnboardNetworkStack::get_default_instance());
         ntp_initialized = true;
 
         printf("Initialized NTP client. The time is now ");

@@ -2,6 +2,7 @@
 
 #include <ns_cmdline.h>
 #include <OnboardNetworkStack.h>
+#include <cinttypes>
 
 #include "mbed.h"
 
