@@ -83,6 +83,10 @@ int main(void)
         "Usage: udp-listen <local port> [<remote IP> <remote port>]\n"
         "Enters a loop listening forever for UDP packets on the given port. Optionally, you can pass a specific\n"
         "remote IP and port to only accept packets from this address.");
+    cmd_add("tcp-send", tcp_send, "Send a string via TCP connection",
+        "Usage: tcp-send <dest IP> <dest port> \"<payload to send>\"\n"
+        "Sends the given payload string (plus a newline) to a remote host via TCP.");
+    cmd_add("http-request-test", http_request_test, "Do a basic http request tp ifconfig.io for our IP address.", nullptr);
 
     // Run the CLI
 
