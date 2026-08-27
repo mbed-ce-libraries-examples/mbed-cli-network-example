@@ -18,12 +18,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           submodules: true # Check out top-level submodules, but not all submodules within Mbed OS
 
       - name: Build project for ${{ matrix.mbed_target }}
         run: |
+          cat /etc/gitconfig
           mkdir build && cd build
           cmake .. -GNinja -DMBED_TARGET=${{ matrix.mbed_target }}
           ninja
